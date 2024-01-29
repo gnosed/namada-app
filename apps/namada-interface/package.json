@@ -60,7 +60,8 @@
     "wasm:build:multicore": "node ./scripts/build.js --release --multicore",
     "wasm:build:dev": "node ./scripts/build.js",
     "wasm:build:dev:multicore": "node ./scripts/build.js --multicore",
-    "wasm:build:node": "./scripts/build-node.sh"
+    "wasm:build:node": "./scripts/build-node.sh",
+    "vercel:build": "./scripts/vercel-build.sh"
   },
   "browserslist": {
     "production": [
