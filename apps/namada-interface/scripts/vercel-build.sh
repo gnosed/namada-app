@@ -8,6 +8,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 # Adding binaries to path
 source "$HOME/.cargo/env"
 
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # Install wasm-pack
 echo "Installing wasm-pack..."
 # Install wasm-pack
