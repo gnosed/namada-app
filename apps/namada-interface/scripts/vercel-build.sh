@@ -1,6 +1,5 @@
 #!/bin/bash
 
-sudo su
 # Install Rust
 echo "Installing Rustup..."
 # Install Rustup (compiler)
