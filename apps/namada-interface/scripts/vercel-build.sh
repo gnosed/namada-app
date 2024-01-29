@@ -5,9 +5,9 @@ echo "Installing Rustup..."
 # Install Rustup (compiler)
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 # Adding binaries to path
-source "$HOME/.cargo/env"
+source "/vercel/.cargo/env"
 
-export PATH="$HOME/.cargo/bin:$PATH"
+# export PATH="$HOME/.cargo/bin:$PATH"
 
 # Install wasm-pack
 echo "Installing wasm-pack..."
