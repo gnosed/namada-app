@@ -45,7 +45,7 @@
     "dev": "NODE_ENV=development yarn start",
     "dev:local": "NODE_ENV=development NAMADA_INTERFACE_LOCAL=\"true\" yarn dev",
     "dev:proxy": "NAMADA_INTERFACE_PROXY=true && ./scripts/start-proxies.sh && yarn dev:local",
-    "build": "NODE_ENV=production && yarn wasm:build && webpack-cli",
+    "build": "NODE_ENV=production && yarn vercel:build && yarn wasm:build && webpack-cli",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "yarn lint -- --fix",
     "lint:ci": "yarn lint --max-warnings 0",
