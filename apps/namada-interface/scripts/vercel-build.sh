@@ -5,8 +5,11 @@ echo "Installing Rustup..."
 # Install Rustup (compiler)
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 # Adding binaries to path
+echo $HOME 
+echo $PATH
+pwd 
 source "/root/.cargo/env"
-
+whereis cargo 
 # export PATH="$HOME/.cargo/bin:$PATH"
 
 # Install wasm-pack
