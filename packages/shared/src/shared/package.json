@@ -13,7 +13,8 @@
   "files": [
     "shared_bg.wasm",
     "shared.js",
-    "shared.d.ts"
+    "shared.d.ts",
+    "LICENSE_MIT"
   ],
   "module": "shared.js",
   "types": "shared.d.ts",

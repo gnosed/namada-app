@@ -13,7 +13,8 @@
   "files": [
     "crypto_bg.wasm",
     "crypto.js",
-    "crypto.d.ts"
+    "crypto.d.ts",
+    "LICENSE_MIT"
   ],
   "module": "crypto.js",
   "types": "crypto.d.ts",
