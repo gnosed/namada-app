@@ -1,4 +1,5 @@
 import {
+  BalancesProps,
   Chain,
   DerivedAccount,
   Namada as INamada,
@@ -6,12 +7,13 @@ import {
   SignArbitraryProps,
   SignatureResponse,
   TxMsgProps,
+  VerifyArbitraryProps,
 } from "@namada/types";
 import { InjectedProxy } from "./InjectedProxy";
 import { Signer } from "./Signer";
 
 export class InjectedNamada implements INamada {
-  constructor(private readonly _version: string) {}
+  constructor(private readonly _version: string) { }
 
   public async connect(): Promise<void> {
     return await InjectedProxy.requestMethod<string, void>("connect");
@@ -38,13 +40,20 @@ export class InjectedNamada implements INamada {
     >("sign", props);
   }
 
+  public async verify(props: VerifyArbitraryProps): Promise<void> {
+    return await InjectedProxy.requestMethod<VerifyArbitraryProps, void>(
+      "verify",
+      props
+    );
+  }
+
   public async balances(
-    owner: string
+    props: BalancesProps
   ): Promise<{ token: string; amount: string }[]> {
     return await InjectedProxy.requestMethod<
-      string,
+      BalancesProps,
       { token: string; amount: string }[]
-    >("balances", owner);
+    >("balances", props);
   }
 
   public async getChain(): Promise<Chain | undefined> {

@@ -1,10 +1,12 @@
 import {
+  BalancesProps,
   Chain,
   DerivedAccount,
   Namada as INamada,
   SignArbitraryProps,
   SignatureResponse,
   TxMsgProps,
+  VerifyArbitraryProps,
 } from "@namada/types";
 import { MessageRequester, Ports } from "router";
 
@@ -19,6 +21,7 @@ import {
   QueryAccountsMsg,
   QueryBalancesMsg,
   QueryDefaultAccountMsg,
+  VerifyArbitraryMsg,
 } from "./messages";
 
 export class Namada implements INamada {
@@ -64,6 +67,14 @@ export class Namada implements INamada {
     );
   }
 
+  public async verify(props: VerifyArbitraryProps): Promise<void> {
+    const { publicKey, hash, signature } = props;
+    return await this.requester?.sendMessage(
+      Ports.Background,
+      new VerifyArbitraryMsg(publicKey, hash, signature)
+    );
+  }
+
   public async fetchAndStoreMaspParams(): Promise<void> {
     return await this.requester?.sendMessage(
       Ports.Background,
@@ -93,11 +104,12 @@ export class Namada implements INamada {
   }
 
   public async balances(
-    owner: string
+    props: BalancesProps
   ): Promise<{ token: string; amount: string }[] | undefined> {
+    const { owner, tokens } = props;
     return await this.requester?.sendMessage(
       Ports.Background,
-      new QueryBalancesMsg(owner)
+      new QueryBalancesMsg(owner, tokens)
     );
   }
 

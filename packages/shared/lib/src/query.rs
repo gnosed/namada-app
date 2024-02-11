@@ -1,7 +1,8 @@
-use borsh::BorshSerialize;
 use js_sys::Uint8Array;
-use masp_primitives::transaction::components::{I128Sum, ValueSum};
+use masp_primitives::asset_type::AssetType;
+use masp_primitives::transaction::components::ValueSum;
 use masp_primitives::zip32::ExtendedFullViewingKey;
+use namada::core::borsh::BorshSerialize;
 use namada::governance::storage::keys as governance_storage;
 use namada::governance::utils::{compute_proposal_result, ProposalVotes, TallyVote, VotePower};
 use namada::governance::{ProposalType, ProposalVote};
@@ -12,15 +13,11 @@ use namada::proof_of_stake::Epoch;
 use namada::sdk::masp::ShieldedContext;
 use namada::sdk::rpc::{
     format_denominated_amount, get_public_key_at, get_token_balance, get_total_staked_tokens,
-    query_epoch, query_proposal_by_id, query_proposal_votes, query_storage_value,
+    query_epoch, query_native_token, query_proposal_by_id, query_proposal_votes,
+    query_storage_value,
 };
 use namada::types::eth_bridge_pool::TransferToEthereum;
-use namada::types::{
-    address::Address,
-    masp::ExtendedViewingKey,
-    token::{self},
-    uint::I256,
-};
+use namada::types::{address::Address, masp::ExtendedViewingKey, token, uint::I256};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::str::FromStr;
 use wasm_bindgen::prelude::*;
@@ -151,11 +148,11 @@ impl Query {
     }
 
     fn get_decoded_balance(
-        decoded_balance: ValueSum<Address, I256>,
+        decoded_balance: (ValueSum<Address, I256>, ValueSum<AssetType, i128>),
     ) -> Vec<(Address, token::Amount)> {
         let mut result = Vec::new();
 
-        for (token_addr, amount) in decoded_balance.components() {
+        for (token_addr, amount) in decoded_balance.0.components() {
             let amount = token::Amount::from_change(*amount);
             result.push((token_addr.clone(), amount));
         }
@@ -280,7 +277,7 @@ impl Query {
             .await?
             .expect("context should contain viewing key");
         let decoded_balance = shielded
-            .decode_combine_sum_to_epoch(&self.client, I128Sum::from(balance), epoch)
+            .decode_combine_sum_to_epoch(&self.client, balance, epoch)
             .await;
 
         Ok(Self::get_decoded_balance(decoded_balance))
@@ -497,6 +494,11 @@ impl Query {
         }
 
         to_js_result(result)
+    }
+
+    pub async fn query_native_token(&self) -> Result<JsValue, JsError> {
+        let address = query_native_token(&self.client).await?;
+        to_js_result(address)
     }
 }
 
