@@ -222,6 +222,10 @@ export class Query {
 * @returns {Promise<any>}
 */
   query_gas_costs(): Promise<any>;
+/**
+* @returns {Promise<any>}
+*/
+  query_native_token(): Promise<any>;
 }
 /**
 * Represents the Sdk public API.
@@ -230,8 +234,9 @@ export class Sdk {
   free(): void;
 /**
 * @param {string} url
+* @param {string} native_token
 */
-  constructor(url: string);
+  constructor(url: string, native_token: string);
 /**
 * @returns {Promise<any>}
 */
@@ -343,19 +348,42 @@ export class Sdk {
 /**
 * @param {string} signing_key
 * @param {string} data
-* @returns {Promise<any>}
+* @returns {any}
 */
-  sign_arbitrary(signing_key: string, data: string): Promise<any>;
+  sign_arbitrary(signing_key: string, data: string): any;
+/**
+* @param {string} public_key
+* @param {string} signed_hash
+* @param {string} signature
+* @returns {any}
+*/
+  verify_arbitrary(public_key: string, signed_hash: string, signature: string): any;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_query_free: (a: number) => void;
+  readonly query_new: (a: number, b: number) => number;
+  readonly query_query_epoch: (a: number) => number;
+  readonly query_query_all_validator_addresses: (a: number) => number;
+  readonly query_query_total_bonds: (a: number, b: number, c: number) => number;
+  readonly query_query_my_validators: (a: number, b: number, c: number) => number;
+  readonly query_query_staking_positions: (a: number, b: number, c: number) => number;
+  readonly query_query_balance: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly query_query_public_key: (a: number, b: number, c: number) => number;
+  readonly query_query_signed_bridge_pool: (a: number, b: number, c: number) => number;
+  readonly query_query_proposals: (a: number) => number;
+  readonly query_get_total_delegations: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly query_delegators_votes: (a: number, b: number) => number;
+  readonly query_query_gas_costs: (a: number) => number;
+  readonly query_query_native_token: (a: number) => number;
+  readonly initThreadPool: (a: number) => number;
   readonly __wbg_builttx_free: (a: number) => void;
   readonly builttx_tx_bytes: (a: number, b: number) => void;
   readonly __wbg_sdk_free: (a: number) => void;
-  readonly sdk_new: (a: number, b: number) => number;
+  readonly sdk_new: (a: number, b: number, c: number, d: number) => number;
   readonly sdk_has_masp_params: () => number;
   readonly sdk_fetch_and_store_masp_params: () => number;
   readonly sdk_load_masp_params: (a: number) => number;
@@ -373,22 +401,8 @@ export interface InitOutput {
   readonly sdk_build_withdraw: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
   readonly sdk_build_reveal_pk: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly sdk_reveal_pk: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly sdk_sign_arbitrary: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly __wbg_query_free: (a: number) => void;
-  readonly query_new: (a: number, b: number) => number;
-  readonly query_query_epoch: (a: number) => number;
-  readonly query_query_all_validator_addresses: (a: number) => number;
-  readonly query_query_total_bonds: (a: number, b: number, c: number) => number;
-  readonly query_query_my_validators: (a: number, b: number, c: number) => number;
-  readonly query_query_staking_positions: (a: number, b: number, c: number) => number;
-  readonly query_query_balance: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly query_query_public_key: (a: number, b: number, c: number) => number;
-  readonly query_query_signed_bridge_pool: (a: number, b: number, c: number) => number;
-  readonly query_query_proposals: (a: number) => number;
-  readonly query_get_total_delegations: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly query_delegators_votes: (a: number, b: number) => number;
-  readonly query_query_gas_costs: (a: number) => number;
-  readonly initThreadPool: (a: number) => number;
+  readonly sdk_sign_arbitrary: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+  readonly sdk_verify_arbitrary: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => void;
   readonly public_key_to_bech32: (a: number, b: number, c: number) => void;
   readonly __wbg_address_free: (a: number) => void;
   readonly address_new: (a: number, b: number) => number;
@@ -414,8 +428,8 @@ export interface InitOutput {
   readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h4ad85e59a9848e80: (a: number, b: number, c: number, d: number) => void;
   readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h1b3bf99411c5436b: (a: number, b: number) => void;
   readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h62c2f546ec44ebe7: (a: number, b: number, c: number) => void;
-  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly wasm_bindgen__convert__closures__invoke2_mut__h333e072d6857f9f0: (a: number, b: number, c: number, d: number) => void;
 }
 
