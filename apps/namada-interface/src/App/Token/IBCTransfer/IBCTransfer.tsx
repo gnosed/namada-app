@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import BigNumber from "bignumber.js";
 
+import { Toggle } from "@namada/components";
 import { chains } from "@namada/chains";
 import {
   Account as AccountType,
@@ -63,6 +64,7 @@ export const submitIbcTransfer = async (
     isShielded
   } = ibcArgs;
   const integration = getIntegration(chainKey);
+  console.log("integration: ", integration)
   console.log("submitIbcTransfer  ")
 
   return await integration.submitBridgeTransfer(
@@ -110,6 +112,7 @@ const IBCTransfer = (): JSX.Element => {
   const [sourceChainId, setSourceChainId] = useState(chains.namada.chainId)
   const sourceChain: Chain = Object.values(chains)
     .find((chain: Chain) => chain.chainId === sourceChainId) || chains.namada;
+    console.log("sourceChain: ", sourceChain)
 
   const ibcChains = Object.values(chains).filter(
     (chain: Chain) => chain.chainId !== sourceChainId && chain.bridgeType.includes(BridgeType.IBC)
@@ -145,6 +148,7 @@ const IBCTransfer = (): JSX.Element => {
 
   const [sourceAccount, setSourceAccount] = useState<Account>();
   const [token, setToken] = useState<TokenType>(chains.namada.currency.symbol as TokenType);
+  console.log("token", token)
   const [isShielded, setIsShielded] = useState<boolean>(false);
 
   const extensionAttachStatus = useUntilIntegrationAttached(sourceChain);
@@ -178,6 +182,9 @@ const IBCTransfer = (): JSX.Element => {
         });
     }
   );
+  const toggleIsShielded = (): void => {
+    setIsShielded((isShielded) => (isShielded ? false : true));
+  };  
 
   useEffect(() => {
     if (sourceAccounts.length > 0) {
@@ -240,7 +247,7 @@ const IBCTransfer = (): JSX.Element => {
   ): void => {
     const { value: chainId } = event.target;
     setSourceChainId(chainId)
-    setToken(sourceChain.currency.symbol as TokenType)
+    // setToken(sourceChain.currency.symbol as TokenType)
   };
 
   const { portId = "transfer" } = sourceChain.ibc || {};
@@ -275,6 +282,18 @@ const IBCTransfer = (): JSX.Element => {
     setError(undefined)
     const tokens = sourceChain.id === "namada" ? Tokens : CosmosTokens;
     if (sourceAccount && token) {
+      const selectedChannelIdCustom = "channel-3945"
+    console.log("handleSubmit:")
+    console.log("account: ", sourceAccount.details)
+    console.log("token: ", tokens[token as TokenType & CosmosTokenType])
+    console.log("amount: ", amount)
+    console.log("chainId: ", sourceChainId)
+    console.log("target: ", recipient)
+    console.log("channelId: ", selectedChannelId)
+    console.log("portId: ", portId)
+    console.log("nativeToken: ", chain.currency.address || tokenAddress)
+    console.log("memo: ", memo)
+    console.log("isShielded: ", isShielded)
       submitIbcTransfer(sourceChain.id, {
         account: sourceAccount.details,
         token: tokens[token as TokenType & CosmosTokenType],
@@ -387,6 +406,15 @@ const IBCTransfer = (): JSX.Element => {
       {sourceChain && (
         <>
           {error && <Alert type="error">{error}</Alert>}
+                <label className="text-sm font-medium text-neutral-300 w-full [&_p]:pb-1">
+      Shielded: {JSON.stringify(isShielded)}
+      <div>
+                <Toggle
+                  checked={!isShielded}
+                  onClick={toggleIsShielded}
+                />
+      </div>
+    </label>
           <InputContainer>
             <Select
               value={sourceChainId}
