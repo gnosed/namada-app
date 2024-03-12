@@ -1,10 +1,13 @@
 import { RegisteredCoinType, registeredCoinTypes } from "slip44";
 import { TokenInfo } from "./types";
 
-export type CosmosMinDenom = "uatom" | "uosmo";
+export type CosmosMinDenom =
+  | "uatom"
+  | "uosmo"
+  | "tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee";
 
 // Tokens in Cosmos ecosystem
-export const CosmosSymbols = ["ATOM", "OSMO"] as const;
+export const CosmosSymbols = ["ATOM", "OSMO", "NAM"] as const;
 
 export type CosmosTokenType = (typeof CosmosSymbols)[number];
 type CosmosTokens = Record<CosmosTokenType, TokenInfo>;
@@ -15,6 +18,7 @@ type CosmosDenom = [CosmosMinDenom, CosmosTokenType];
 const CosmosTokenDenoms: CosmosDenom[] = [
   ["uatom", "ATOM"],
   ["uosmo", "OSMO"],
+  ["tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee", "NAM"],
 ];
 
 const tokenDenomLookup = (
