@@ -35,7 +35,7 @@
     "wasm:build:dev:multicore": "node ./scripts/build.js --multicore"
   },
   "dependencies": {
-    "@cosmjs/encoding": "^0.29.0",
+    "@cosmjs/encoding": "^0.32.3",
     "@dao-xyz/borsh": "^5.1.5",
     "@ledgerhq/hw-transport": "^6.30.0",
     "@ledgerhq/hw-transport-webhid": "^6.28.0",
