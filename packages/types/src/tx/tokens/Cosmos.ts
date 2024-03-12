@@ -4,7 +4,7 @@ import { TokenInfo } from "./types";
 export type CosmosMinDenom =
   | "uatom"
   | "uosmo"
-  | "tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee";
+  | "ibc/9C04FB6388F40F35022872270047CF4DBC2EB5BFE011709C10CC53F3F78927D2";
 
 // Tokens in Cosmos ecosystem
 export const CosmosSymbols = ["ATOM", "OSMO", "NAM"] as const;
@@ -18,7 +18,7 @@ type CosmosDenom = [CosmosMinDenom, CosmosTokenType];
 const CosmosTokenDenoms: CosmosDenom[] = [
   ["uatom", "ATOM"],
   ["uosmo", "OSMO"],
-  ["tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee", "NAM"],
+  ["ibc/9C04FB6388F40F35022872270047CF4DBC2EB5BFE011709C10CC53F3F78927D2", "NAM"],
 ];
 
 const tokenDenomLookup = (

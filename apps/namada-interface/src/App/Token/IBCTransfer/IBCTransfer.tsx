@@ -66,6 +66,7 @@ export const submitIbcTransfer = async (
   const integration = getIntegration(chainKey);
   console.log("integration: ", integration)
   console.log("submitIbcTransfer  ")
+  console.log("balances", await integration.queryBalances(address))
 
   return await integration.submitBridgeTransfer(
     {
@@ -147,6 +148,7 @@ const IBCTransfer = (): JSX.Element => {
   >([]);
 
   const [sourceAccount, setSourceAccount] = useState<Account>();
+  console.log("sourceAccount", sourceAccount)
   const [token, setToken] = useState<TokenType>(chains.namada.currency.symbol as TokenType);
   console.log("token", token)
   const [isShielded, setIsShielded] = useState<boolean>(false);

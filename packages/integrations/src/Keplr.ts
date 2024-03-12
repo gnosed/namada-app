@@ -162,8 +162,8 @@ class Keplr implements Integration<Account, OfflineSigner> {
         this.signer(),
         defaultSigningClientOptions
       ).catch((e) => {
-        console.log("client signing")
-        return Promise.reject(e)
+        console.log("client signing");
+        return Promise.reject(e);
       });
 
       const fee = {
@@ -171,25 +171,27 @@ class Keplr implements Integration<Account, OfflineSigner> {
         gas: "222000",
       };
 
-      const response = await client.sendIbcTokens(
-        source,
-        receiver,
-        coin(amount.toString(), minDenom),
-        portId,
-        channelId,
-        // TODO: Should we enable timeout height versus timestamp?
-        // {
-        //   revisionHeight: Long.fromNumber(0),
-        //   revisionNumber: Long.fromNumber(0),
-        // },
-        undefined, // timeout height
-        Math.floor(Date.now() / 1000) + 60, // timeout timestamp
-        fee,
-        `${this.chain.alias} (${this.chain.chainId})->Namada`
-      )
-      .catch((e) => {
-        console.log("Keplr sendIbcTokens")
-        return Promise.reject(e)});
+      const response = await client
+        .sendIbcTokens(
+          source,
+          receiver,
+          coin(amount.toString(), minDenom),
+          portId,
+          channelId,
+          // TODO: Should we enable timeout height versus timestamp?
+          // {
+          //   revisionHeight: Long.fromNumber(0),
+          //   revisionNumber: Long.fromNumber(0),
+          // },
+          undefined, // timeout height
+          Math.floor(Date.now() / 1000) + 60, // timeout timestamp
+          fee,
+          `${this.chain.alias} (${this.chain.chainId})->Namada`
+        )
+        .catch((e) => {
+          console.log("Keplr sendIbcTokens");
+          return Promise.reject(e);
+        });
 
       if (response.code !== 0) {
         console.error("Transaction failed:", { response });
@@ -207,23 +209,26 @@ class Keplr implements Integration<Account, OfflineSigner> {
   public async queryBalances(owner: string): Promise<TokenBalance[]> {
     const client = await StargateClient.connect(this.chain.rpc);
     const balances = (await client.getAllBalances(owner)) || [];
+    console.log("keplr queryBalances balances", balances);
 
     // TODO: Remove filter once we can handle IBC tokens properly
-    return balances
-      .filter((balance) => balance.denom === "uatom")
-      .map((coin: Coin) => {
-        const token = tokenByMinDenom(
-          coin.denom as CosmosMinDenom
-        ) as TokenType;
-        const amount = new BigNumber(coin.amount);
-        return {
-          token,
-          amount: (coin.denom === "uatom"
-            ? amount.dividedBy(1_000_000)
-            : amount
-          ).toString(),
-        };
-      });
+    return (
+      balances
+        // .filter((balance) => balance.denom === "uatom")
+        .map((coin: Coin) => {
+          const token = tokenByMinDenom(
+            coin.denom as CosmosMinDenom
+          ) as TokenType;
+          const amount = new BigNumber(coin.amount);
+          return {
+            token,
+            amount: (coin.denom === "uatom"
+              ? amount.dividedBy(1_000_000)
+              : amount
+            ).toString(),
+          };
+        })
+    );
   }
 }
 
