@@ -2,6 +2,10 @@ use std::{path::PathBuf, str::FromStr};
 
 use namada::core::borsh::{BorshDeserialize, BorshSerialize};
 use namada::core::ibc::core::host::types::identifiers::{ChannelId, PortId};
+use namada::ibc::apps::transfer::types::Memo;
+use namada::sdk::args::Query;
+use namada::sdk::tx::gen_ibc_shielded_transfer;
+use namada::sdk::Namada;
 use namada::tendermint_rpc;
 use namada::tx::data::GasLimit;
 use namada::{
@@ -284,6 +288,7 @@ pub struct SubmitIbcTransferMsg {
     channel_id: String,
     timeout_height: Option<u64>,
     timeout_sec_offset: Option<u64>,
+    is_shielded: Option<bool>,
 }
 
 /// Maps serialized tx_msg into IbcTransferTx args.
@@ -296,7 +301,8 @@ pub struct SubmitIbcTransferMsg {
 ///
 /// Returns JsError if the tx_msg can't be deserialized or
 /// Rust structs can't be created.
-pub fn ibc_transfer_tx_args(
+pub async fn ibc_transfer_tx_args(
+    context: &impl Namada,
     ibc_transfer_msg: &[u8],
     tx_msg: &[u8],
 ) -> Result<args::TxIbcTransfer, JsError> {
@@ -310,6 +316,7 @@ pub fn ibc_transfer_tx_args(
         channel_id,
         timeout_height,
         timeout_sec_offset,
+        is_shielded,
     } = ibc_transfer_msg;
 
     let source_address = Address::from_str(&source)?;
@@ -321,9 +328,39 @@ pub fn ibc_transfer_tx_args(
     let channel_id = ChannelId::from_str(&channel_id).expect("Channel id to be valid");
     let tx = tx_msg_into_args(tx_msg)?;
 
+    let mut memo: Option<String> = None;
+
+    if let Some(true) = is_shielded {
+        let receiver_address = PaymentAddress::from_str(&receiver)?;
+        let receiver = TransferTarget::PaymentAddress(receiver_address);
+        // let query = context.query;
+        // Ledger address is not used in the SDK.
+        // We can leave it as whatever as long as it's valid url.
+        let ledger_address = tendermint_rpc::Url::from_str("http://notinuse:13337").unwrap();
+        let query = Query { ledger_address };
+        // TODO: add gen_ibc_shielded with elements from IBC args, then find the Memo
+        let shielded_args = args::GenIbcShieldedTransfer {
+            query,
+            output_folder: None,
+            target: receiver,
+            token: token.to_string(),
+            amount,
+            port_id: port_id.clone(),
+            channel_id: channel_id.clone(),
+        };
+
+        if let Some(shielded_transfer) =
+            gen_ibc_shielded_transfer(context, shielded_args.clone()).await?
+        {
+            memo = Some(Memo::from(shielded_transfer).to_string());
+        } else {
+            eprintln!("No shielded transfer for this IBC transfer.")
+        }
+    }
+
     let args = args::TxIbcTransfer {
         tx,
-        memo: None,
+        memo,
         source,
         receiver,
         token,

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import BigNumber from "bignumber.js";
 import { field, option } from "@dao-xyz/borsh";
-import { BigNumberSerializer } from "./utils";
+import BigNumber from "bignumber.js";
 import { IbcTransferProps } from "../types";
+import { BigNumberSerializer } from "./utils";
 
 export class IbcTransferMsgValue {
   @field({ type: "string" })
@@ -28,6 +28,9 @@ export class IbcTransferMsgValue {
 
   @field({ type: option("u64") })
   timeoutSecOffset?: bigint;
+
+  @field({ type: option("bool") })
+  isShielded?: boolean;
 
   constructor(data: IbcTransferProps) {
     Object.assign(this, data);

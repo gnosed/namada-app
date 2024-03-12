@@ -283,7 +283,7 @@ impl Sdk {
         tx_msg: &[u8],
         _gas_payer: Option<String>,
     ) -> Result<BuiltTx, JsError> {
-        let args = tx::ibc_transfer_tx_args(ibc_transfer_msg, tx_msg)?;
+        let args = tx::ibc_transfer_tx_args(&self.namada, ibc_transfer_msg, tx_msg).await?;
         let (tx, signing_data, _) = build_ibc_transfer(&self.namada, &args).await?;
 
         Ok(BuiltTx { tx, signing_data })

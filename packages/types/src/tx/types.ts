@@ -33,4 +33,5 @@ export type IbcTransferProps = {
   channelId: string;
   timeoutHeight?: bigint;
   timeoutSecOffset?: bigint;
+  isShielded?: boolean;
 };
