@@ -60,8 +60,10 @@ export const submitIbcTransfer = async (
     portId,
     channelId,
     nativeToken,
+    isShielded
   } = ibcArgs;
   const integration = getIntegration(chainKey);
+  console.log("submitIbcTransfer  ")
 
   return await integration.submitBridgeTransfer(
     {
@@ -72,6 +74,7 @@ export const submitIbcTransfer = async (
         amount,
         portId,
         channelId,
+        isShielded,
       },
       txProps: {
         token: nativeToken || tokenAddress,
@@ -142,6 +145,7 @@ const IBCTransfer = (): JSX.Element => {
 
   const [sourceAccount, setSourceAccount] = useState<Account>();
   const [token, setToken] = useState<TokenType>(chains.namada.currency.symbol as TokenType);
+  const [isShielded, setIsShielded] = useState<boolean>(false);
 
   const extensionAttachStatus = useUntilIntegrationAttached(sourceChain);
   const currentExtensionAttachStatus =
@@ -182,6 +186,7 @@ const IBCTransfer = (): JSX.Element => {
   }, [sourceAccounts]);
 
   useEffect(() => {
+      console.log(sourceAccount, token)
     if (sourceAccount && token) {
       setCurrentBalance(sourceAccount.balance[token as TokenType] || new BigNumber(0));
       setToken(token)
@@ -280,6 +285,7 @@ const IBCTransfer = (): JSX.Element => {
         portId,
         nativeToken: chain.currency.address || tokenAddress,
         memo,
+        isShielded
       }).catch((e) => {
         setError(`${e}`)
       })
@@ -363,7 +369,8 @@ const IBCTransfer = (): JSX.Element => {
 
   useEffect(() => {
     const isValid = validateForm();
-    setIsFormValid(isValid);
+    // setIsFormValid(isValid);
+    setIsFormValid(true);
   }, [
     amount,
     currentBalance,
@@ -533,6 +540,8 @@ const IBCTransfer = (): JSX.Element => {
           </InputContainer>
 
           <InputContainer>
+          {JSON.stringify(amount)}
+          {JSON.stringify(currentBalance)}
             <Input
               type="number"
               label={"Amount"}
@@ -543,7 +552,8 @@ const IBCTransfer = (): JSX.Element => {
               }}
               onFocus={handleFocus}
               error={
-                isAmountValid(amount, currentBalance) || amount.isZero()
+                // isAmountValid(amount, currentBalance) || amount.isZero()
+                true
                   ? undefined
                   : "Invalid amount!"
               }

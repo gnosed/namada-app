@@ -54,4 +54,5 @@ export type TxIbcTransferArgs = Omit<TxArgs, "token"> & {
   channelId: string;
   portId: string;
   token: TokenInfo;
+  isShielded: boolean;
 };
