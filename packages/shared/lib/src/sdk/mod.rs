@@ -12,12 +12,15 @@ use namada::core::borsh::{self, BorshDeserialize};
 use namada::hash::Hash;
 use namada::key::{common, ed25519, SigScheme};
 use namada::ledger::eth_bridge::bridge_pool::build_bridge_pool_tx;
+use namada::ibc::apps::transfer::types::Memo;
+use namada::core::ibc::core::host::types::identifiers::{ChannelId, PortId};
 use namada::sdk::masp::ShieldedContext;
 use namada::sdk::rpc::query_epoch;
 use namada::sdk::signing::{find_key_by_pk, SigningTxData};
 use namada::sdk::tx::{
     build_bond, build_ibc_transfer, build_reveal_pk, build_transfer, build_unbond,
     build_vote_proposal, build_withdraw, is_reveal_pk_needed, process_tx,
+    gen_ibc_shielded_transfer
 };
 use namada::sdk::wallet::{Store, Wallet};
 use namada::sdk::{Namada, NamadaImpl};
@@ -283,10 +286,20 @@ impl Sdk {
         tx_msg: &[u8],
         _gas_payer: Option<String>,
     ) -> Result<BuiltTx, JsError> {
+    web_sys::console::log_1(&"WASM - build_ibc_transfer".into());
         let args = tx::ibc_transfer_tx_args(&self.namada, ibc_transfer_msg, tx_msg).await?;
         let (tx, signing_data, _) = build_ibc_transfer(&self.namada, &args).await?;
 
         Ok(BuiltTx { tx, signing_data })
+    }
+    
+    pub async fn get_ibc_shielded_transfer_memo(&mut self,  receiver: String,
+        token: String,
+    amount: String,
+    port_id:String,
+    channel_id:String, _gas_payer: Option<String>) -> Result<String, JsError> {
+        let memo = tx::ibc_shielded_transfer_tx_memo(&self.namada, receiver, token, amount, port_id, channel_id).await?;
+        Ok(memo.unwrap())
     }
 
     pub async fn build_eth_bridge_transfer(

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import BigNumber from "bignumber.js";
+import { Sdk } from "@namada/shared";
 
 import { Toggle } from "@namada/components";
 import { chains } from "@namada/chains";
@@ -51,7 +52,7 @@ const {
 
 export const submitIbcTransfer = async (
   chainKey: ChainKey,
-  ibcArgs: TxIbcTransferArgs
+  ibcArgs: TxIbcTransferArgs,
 ): Promise<void> => {
   const {
     account: { address, chainId, publicKey, type },
@@ -61,12 +62,34 @@ export const submitIbcTransfer = async (
     portId,
     channelId,
     nativeToken,
-    isShielded
+    isShielded,
   } = ibcArgs;
+  console.log(typeof isShielded)
+  console.log("isShielded: " ,isShielded)
+  console.log("submitIbcTransfer")
+  console.log("chainKey: ", chainKey)
+  console.log("target: ", target)
+  console.log("amount: ", amount.toString())
+  console.log("portId: ", portId)
+  console.log("token: ", token)
+  // console.log("integration: ", integration)
+  // console.log("balances: ", await integration.queryBalances(address))
+  const namadaChannelId = "channel-1024"
+
+  let memo = ''
+  if (isShielded) {
+    console.log("isShielded: ", isShielded)
+    // const sdk = new Sdk(rpc, nativeToken);
+    // const memo = sdk.get_ibc_shielded_transfer_memo("znam1qprxaehspfsx2ceyr4fyewcejhvrsgeur8tx8nkhy49q4eacq29flvjmgwu5axu74dmgzeqdw76cg", "tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee", "55", "transfer", "channel-874");
+    // TODO: get the memo from a rpc endpoint that is on a server
+    const memoResponse = await fetch(`http://162.55.0.160:5000/ibc_shielded_memo?token=uatom&amount=${amount.toString()}&port_id=${portId}&channel_id=${namadaChannelId}&target=${target}`);
+    const memoData = await memoResponse.json();
+    memo = memoData.memo;
+    console.log("MEMOOOOO! : ", memo)
+
+  }
+
   const integration = getIntegration(chainKey);
-  console.log("integration: ", integration)
-  console.log("submitIbcTransfer  ")
-  console.log("balances", await integration.queryBalances(address))
 
   return await integration.submitBridgeTransfer(
     {
@@ -85,6 +108,7 @@ export const submitIbcTransfer = async (
         gasLimit: new BigNumber(20_000),
         publicKey,
         chainId,
+        memo
       },
     },
     type
@@ -143,6 +167,7 @@ const IBCTransfer = (): JSX.Element => {
   const [channelId, setChannelId] = useState<string>();
   const [recipient, setRecipient] = useState("");
   const [destinationAccounts, setDestinationAccounts] = useState<Account[]>([]);
+  console.log("destinationAccounts", destinationAccounts)
   const [destinationAccountData, setDestinationAccountData] = useState<
     Option<string>[]
   >([]);
@@ -207,8 +232,9 @@ const IBCTransfer = (): JSX.Element => {
     if (!chain) return;
 
     const destinationAccounts = Object.values(derived[chain.id]).filter(
-      (account) => !account.details.isShielded
+      (account) => account.details.isShielded == isShielded
     );
+    console.log("YOOO destinationAccounts", destinationAccounts)
     setDestinationAccounts(destinationAccounts);
     const destinationAccountsData = destinationAccounts.map(
       ({ details: { alias, address } }) => ({
@@ -217,7 +243,7 @@ const IBCTransfer = (): JSX.Element => {
       })
     );
     setDestinationAccountData(destinationAccountsData);
-  }, [derived, destinationChainId]);
+  }, [derived, destinationChainId, isShielded]);
 
   useEffect(() => {
     // Set recipient to first destination account
@@ -284,7 +310,7 @@ const IBCTransfer = (): JSX.Element => {
     setError(undefined)
     const tokens = sourceChain.id === "namada" ? Tokens : CosmosTokens;
     if (sourceAccount && token) {
-      const selectedChannelIdCustom = "channel-3945"
+      // const channelId_= "channel-3987"
     console.log("handleSubmit:")
     console.log("account: ", sourceAccount.details)
     console.log("token: ", tokens[token as TokenType & CosmosTokenType])
@@ -302,7 +328,9 @@ const IBCTransfer = (): JSX.Element => {
         amount,
         chainId: sourceChainId,
         target: recipient,
-        channelId: selectedChannelId,
+        // target: "znam1qprxaehspfsx2ceyr4fyewcejhvrsgeur8tx8nkhy49q4eacq29flvjmgwu5axu74dmgzeqdw76cg",
+        channelId: "channel-4038",
+        // channelId: selectedChannelId,
         portId,
         nativeToken: chain.currency.address || tokenAddress,
         memo,
@@ -570,8 +598,8 @@ const IBCTransfer = (): JSX.Element => {
           </InputContainer>
 
           <InputContainer>
-          {JSON.stringify(amount)}
-          {JSON.stringify(currentBalance)}
+          {/* {JSON.stringify(amount)}
+          {JSON.stringify(currentBalance)} */}
             <Input
               type="number"
               label={"Amount"}

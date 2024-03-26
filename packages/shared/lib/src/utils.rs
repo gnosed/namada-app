@@ -11,6 +11,7 @@ extern "C" {
 }
 
 #[allow(dead_code)]
+#[cfg(feature = "dev")]
 pub fn console_log(string: &str) {
     log(string);
 }

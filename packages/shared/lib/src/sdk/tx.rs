@@ -277,7 +277,7 @@ pub fn transfer_tx_args(
     Ok(args)
 }
 
-#[derive(BorshSerialize, BorshDeserialize)]
+#[derive(BorshSerialize, BorshDeserialize, Debug)]
 #[borsh(crate = "namada::core::borsh")]
 pub struct SubmitIbcTransferMsg {
     source: String,
@@ -319,6 +319,8 @@ pub async fn ibc_transfer_tx_args(
         is_shielded,
     } = ibc_transfer_msg;
 
+    web_sys::console::log_1(&"WASM - ibc_transfer_tx_args".into());
+
     let source_address = Address::from_str(&source)?;
     let source = TransferSource::Address(source_address);
     let token = Address::from_str(&token)?;
@@ -331,6 +333,7 @@ pub async fn ibc_transfer_tx_args(
     let mut memo: Option<String> = None;
 
     if let Some(true) = is_shielded {
+        web_sys::console::log_1(&"WASM - is_shielded".into());
         let receiver_address = PaymentAddress::from_str(&receiver)?;
         let receiver = TransferTarget::PaymentAddress(receiver_address);
         // let query = context.query;
@@ -353,6 +356,7 @@ pub async fn ibc_transfer_tx_args(
             gen_ibc_shielded_transfer(context, shielded_args.clone()).await?
         {
             memo = Some(Memo::from(shielded_transfer).to_string());
+            web_sys::console::log_1(&"WASM - Set Memo".into());
         } else {
             eprintln!("No shielded transfer for this IBC transfer.")
         }
@@ -374,6 +378,51 @@ pub async fn ibc_transfer_tx_args(
 
     Ok(args)
 }
+    pub async fn ibc_shielded_transfer_tx_memo( 
+    context: &impl Namada,
+    receiver: String,
+    token: String,
+amount: String,
+port_id:String,
+channel_id:String) -> Result<Option<String>, JsError> {
+    web_sys::console::log_1(&"WASM - ibc_transfer_tx_args".into());
+
+    let token = Address::from_str(&token)?;
+    let denom_amount = DenominatedAmount::from_str(&amount).expect("Amount to be valid.");
+    let amount = InputAmount::Unvalidated(denom_amount);
+    let port_id = PortId::from_str(&port_id).expect("Port id to be valid");
+    let channel_id = ChannelId::from_str(&channel_id).expect("Channel id to be valid");
+    let mut memo: Option<String> = None;
+
+        web_sys::console::log_1(&"WASM - is_shielded".into());
+        let receiver_address = PaymentAddress::from_str(&receiver)?;
+        let receiver = TransferTarget::PaymentAddress(receiver_address);
+        // let query = context.query;
+        // Ledger address is not used in the SDK.
+        // We can leave it as whatever as long as it's valid url.
+        let ledger_address = tendermint_rpc::Url::from_str("http://notinuse:13337").unwrap();
+        let query = Query { ledger_address };
+        // TODO: add gen_ibc_shielded with elements from IBC args, then find the Memo
+        let shielded_args = args::GenIbcShieldedTransfer {
+            query,
+            output_folder: None,
+            target: receiver,
+            token: token.to_string(),
+            amount,
+            port_id,
+            channel_id
+        };
+    web_sys::console::log_1(&"WASM - shielded_args Ok".into());
+
+          let shielded_transfer =  gen_ibc_shielded_transfer(context, shielded_args).await?;
+    web_sys::console::log_1(&"WASM - gen_ibc_shielded_transfer Ok".into());
+    if let Some(transfer) = shielded_transfer {
+
+            memo = Some(Memo::from(transfer).to_string());
+            web_sys::console::log_1(&"WASM - Set Memo".into());
+    }
+    Ok(memo)
+    }
 
 #[derive(BorshSerialize, BorshDeserialize)]
 #[borsh(crate = "namada::core::borsh")]

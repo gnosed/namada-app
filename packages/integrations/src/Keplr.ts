@@ -1,5 +1,5 @@
 import { Coin } from "@cosmjs/launchpad";
-import { AccountData, coin, coins } from "@cosmjs/proto-signing";
+import { AccountData, coins, coin } from "@cosmjs/proto-signing";
 import {
   SigningStargateClient,
   SigningStargateClientOptions,
@@ -10,6 +10,7 @@ import {
   Window as KeplrWindow,
   Key,
 } from "@keplr-wallet/types";
+import Long from "long";
 // import Long from "long";
 import BigNumber from "bignumber.js";
 
@@ -154,9 +155,15 @@ class Keplr implements Integration<Account, OfflineSigner> {
         portId = "transfer",
         channelId,
       } = props.ibcProps;
-      const { feeAmount } = props.txProps;
+      const { feeAmount, memo } = props.txProps;
 
       const minDenom = minDenomByToken(token.symbol as CosmosTokenType);
+      console.log("minDenom", minDenom)
+      console.log("receiver", receiver)
+      console.log("amount", amount)
+      console.log("portId", portId)
+      console.log("channelId", channelId)
+      console.log("memo", memo)
       const client = await SigningStargateClient.connectWithSigner(
         this.chain.rpc,
         this.signer(),
@@ -171,27 +178,131 @@ class Keplr implements Integration<Account, OfflineSigner> {
         gas: "222000",
       };
 
+      // const response = await client
+      //   .sendIbcTokens(
+      //     source,
+      //     receiver,
+      //     coin(amount.toString(), minDenom),
+      //     portId,
+      //     channelId,
+      //     // TODO: Should we enable timeout height versus timestamp?
+      //     // {
+      //     //   revisionHeight: Long.fromNumber(0),
+      //     //   revisionNumber: Long.fromNumber(0),
+      //     // },
+      //     undefined, // timeout height
+      //     Math.floor(Date.now() / 1000) + 60, // timeout timestamp
+      //     fee,
+      //     `${this.chain.alias} (${this.chain.chainId})->Namada`,
+      //   )
+      //   .catch((e) => {
+      //     console.log("Keplr sendIbcTokens");
+      //     return Promise.reject(e);
+      //   });
+
+      const timeoutTimestamp = Math.floor(Date.now() / 1000) + 60;
+      const timeoutTimestampNanoseconds = timeoutTimestamp
+        ? Long.fromNumber(timeoutTimestamp).multiply(1_000_000_000)
+        : undefined;
+
+      const messages = [
+        {
+          typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+          value: {
+            memo,
+            receiver,
+            sender: source,
+            sourceChannel: channelId,
+            sourcePort: portId,
+            // timeoutHeight: {
+            //   revisionHeight: "0",
+            //   revisionNumber: "20723197",
+            // },
+            timeoutTimestamp: timeoutTimestampNanoseconds, //timeout timestamp
+            token: {
+              amount: amount.toString(),
+              denom: "uatom",
+              // denom: minDenom,
+              // denom: "ibc/E6B985F8CF0F8BB3EB5B80D9EC46531A1E5132B7183C0248858C0F26242F4336"
+            },
+          },
+        },
+      ];
+
+      // const messages = [
+      //   {
+      //     typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+      //     value: {
+      //       memo: "",
+      //       receiver: "tnam1qzlzf57y3j95zmml0ljfmkcy5843mm8seqst82mr",
+      //       sender: "cosmos12pl4vfqzawvlx25qu8xdhkqkzw6cws3v3lw33x",
+      //       sourceChannel: "channel-3987",
+      //       sourcePort: "transfer",
+      //       // timeoutHeight: {
+      //       //   revisionHeight: "0",
+      //       //   revisionNumber: "20723197",
+      //       // },
+      //       timeoutTimestamp: timeoutTimestampNanoseconds, //timeout timestamp
+      //       token: {
+      //         amount: "42",
+      //         denom: "uatom",
+      //         // denom: minDenom,
+      //         // denom: "ibc/E6B985F8CF0F8BB3EB5B80D9EC46531A1E5132B7183C0248858C0F26242F4336"
+      //       },
+      //     },
+      //   },
+      // ];
+      console.log("messages", messages)
+
+      // const transferMsg: MsgTransferEncodeObject = {
+      //   typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+      //   value: MsgTransfer.fromPartial({
+      //     sourcePort: sourcePort,
+      //     sourceChannel: sourceChannel,
+      //     sender: senderAddress,
+      //     receiver: recipientAddress,
+      //     token: transferAmount,
+      //     timeoutHeight: timeoutHeight,
+      //     timeoutTimestamp: timeoutTimestampNanoseconds,
+      //     memo: "" /* your IBC memo goes here */,
+      //   }),
+      // };
       const response = await client
-        .sendIbcTokens(
+        .signAndBroadcast(
           source,
-          receiver,
-          coin(amount.toString(), minDenom),
-          portId,
-          channelId,
-          // TODO: Should we enable timeout height versus timestamp?
-          // {
-          //   revisionHeight: Long.fromNumber(0),
-          //   revisionNumber: Long.fromNumber(0),
-          // },
-          undefined, // timeout height
-          Math.floor(Date.now() / 1000) + 60, // timeout timestamp
+          messages,
           fee,
-          `${this.chain.alias} (${this.chain.chainId})->Namada`
+          "tpknam1qzv6ka97rc9nt9dq5zy5pa8kfuv09x8xmjtcm0uen0627k8lnucyk2g0hwh"
+          // `${this.chain.alias} (${this.chain.chainId})->Namada` // tx memo
+          // timeout height
         )
         .catch((e) => {
           console.log("Keplr sendIbcTokens");
           return Promise.reject(e);
         });
+
+
+      // const response = await client
+      //   .sendIbcTokens(
+      //     source,
+      //     receiver,
+      //     coin(amount.toString(), minDenom),
+      //     portId,
+      //     channelId,
+      //     // TODO: Should we enable timeout height versus timestamp?
+      //     // {
+      //     //   revisionHeight: Long.fromNumber(0),
+      //     //   revisionNumber: Long.fromNumber(0),
+      //     // },
+      //     undefined, // timeout height
+      //     Math.floor(Date.now() / 1000) + 60, // timeout timestamp
+      //     fee,
+      //     `${this.chain.alias} (${this.chain.chainId})->Namada`,
+      //   )
+      //   .catch((e) => {
+      //     console.log("Keplr sendIbcTokens");
+      //     return Promise.reject(e);
+      //   });
 
       if (response.code !== 0) {
         console.error("Transaction failed:", { response });
