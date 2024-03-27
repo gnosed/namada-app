@@ -28,6 +28,7 @@ export const Symbols = [
   "SCH",
   "APF",
   "KAR",
+  "ATOM"
 ] as const;
 
 export type TokenType = (typeof Symbols)[number];
@@ -101,6 +102,13 @@ Tokens["KAR"] = {
   ...Tokens["KAR"],
   coin: "Kartoffel",
   symbol: "KAR",
+  address: "tnam1qyx93z5ma43jjmvl0xhwz4rzn05t697f3vfv8yuj",
+};
+
+Tokens["ATOM"] = {
+  ...Tokens["ATOM"],
+  coin: "Atom",
+  symbol: "ATOM",
   address: "tnam1qyx93z5ma43jjmvl0xhwz4rzn05t697f3vfv8yuj",
 };
 

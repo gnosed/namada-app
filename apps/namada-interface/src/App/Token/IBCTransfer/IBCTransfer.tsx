@@ -15,6 +15,7 @@ import {
   TokenType,
   Tokens,
   ChainKey,
+  TokenBalance,
 } from "@namada/types";
 import {
   Alert,
@@ -48,6 +49,8 @@ import {
 const {
   NAMADA_INTERFACE_NAMADA_TOKEN:
   tokenAddress = "tnam1qxgfw7myv4dh0qna4hq0xdg6lx77fzl7dcem8h7e",
+IBC_MEMO_URL: ibc_memo_url  = "http://162.55.0.160:5000"
+  
 } = process.env;
 
 export const submitIbcTransfer = async (
@@ -64,33 +67,19 @@ export const submitIbcTransfer = async (
     nativeToken,
     isShielded,
   } = ibcArgs;
-  console.log(typeof isShielded)
-  console.log("isShielded: " ,isShielded)
-  console.log("submitIbcTransfer")
-  console.log("chainKey: ", chainKey)
-  console.log("target: ", target)
-  console.log("amount: ", amount.toString())
-  console.log("portId: ", portId)
-  console.log("token: ", token)
-  // console.log("integration: ", integration)
-  // console.log("balances: ", await integration.queryBalances(address))
+  // TODO: make the following variables dynamic using User Input. We only support transfers for ATOM 
   const namadaChannelId = "channel-1024"
-
+  const tokenDenom = "uatom";
   let memo = ''
+
+  // Query memo for IBC shielded tx from RPC endpoint 
   if (isShielded) {
-    console.log("isShielded: ", isShielded)
-    // const sdk = new Sdk(rpc, nativeToken);
-    // const memo = sdk.get_ibc_shielded_transfer_memo("znam1qprxaehspfsx2ceyr4fyewcejhvrsgeur8tx8nkhy49q4eacq29flvjmgwu5axu74dmgzeqdw76cg", "tnam1qxvg64psvhwumv3mwrrjfcz0h3t3274hwggyzcee", "55", "transfer", "channel-874");
-    // TODO: get the memo from a rpc endpoint that is on a server
-    const memoResponse = await fetch(`http://162.55.0.160:5000/ibc_shielded_memo?token=uatom&amount=${amount.toString()}&port_id=${portId}&channel_id=${namadaChannelId}&target=${target}`);
+    const memoResponse = await fetch(`${ibc_memo_url}/ibc_shielded_memo?token=${tokenDenom}&amount=${amount.toString()}&port_id=${portId}&channel_id=${namadaChannelId}&target=${target}`);
     const memoData = await memoResponse.json();
     memo = memoData.memo;
-    console.log("MEMOOOOO! : ", memo)
-
   }
 
   const integration = getIntegration(chainKey);
-
   return await integration.submitBridgeTransfer(
     {
       ibcProps: {
@@ -137,7 +126,6 @@ const IBCTransfer = (): JSX.Element => {
   const [sourceChainId, setSourceChainId] = useState(chains.namada.chainId)
   const sourceChain: Chain = Object.values(chains)
     .find((chain: Chain) => chain.chainId === sourceChainId) || chains.namada;
-    console.log("sourceChain: ", sourceChain)
 
   const ibcChains = Object.values(chains).filter(
     (chain: Chain) => chain.chainId !== sourceChainId && chain.bridgeType.includes(BridgeType.IBC)
@@ -167,16 +155,14 @@ const IBCTransfer = (): JSX.Element => {
   const [channelId, setChannelId] = useState<string>();
   const [recipient, setRecipient] = useState("");
   const [destinationAccounts, setDestinationAccounts] = useState<Account[]>([]);
-  console.log("destinationAccounts", destinationAccounts)
   const [destinationAccountData, setDestinationAccountData] = useState<
     Option<string>[]
   >([]);
 
   const [sourceAccount, setSourceAccount] = useState<Account>();
-  console.log("sourceAccount", sourceAccount)
   const [token, setToken] = useState<TokenType>(chains.namada.currency.symbol as TokenType);
-  console.log("token", token)
   const [isShielded, setIsShielded] = useState<boolean>(false);
+  const [cosmosAccountBalance, setCosmosAccountBalance] = useState<TokenBalance[]>([]);
 
   const extensionAttachStatus = useUntilIntegrationAttached(sourceChain);
   const currentExtensionAttachStatus =
@@ -213,14 +199,24 @@ const IBCTransfer = (): JSX.Element => {
     setIsShielded((isShielded) => (isShielded ? false : true));
   };  
 
+      const fetchCosmosBalance = async () => {
+        const integration = getIntegration(sourceChain.id);
+        const account = sourceAccounts[0]
+        const balances = await integration.queryBalances(account.details.address)
+        const balance =  balances.filter((balance) => balance.token == "ATOM")
+        setCosmosAccountBalance(balance)
+      }
+
   useEffect(() => {
     if (sourceAccounts.length > 0) {
       setSourceAccount(sourceAccounts[0]);
+    if (sourceChain.id == 'cosmos' && cosmosAccountBalance.length === 0 ) {
+      fetchCosmosBalance()
+    }
     }
   }, [sourceAccounts]);
 
   useEffect(() => {
-      console.log(sourceAccount, token)
     if (sourceAccount && token) {
       setCurrentBalance(sourceAccount.balance[token as TokenType] || new BigNumber(0));
       setToken(token)
@@ -233,8 +229,14 @@ const IBCTransfer = (): JSX.Element => {
 
     const destinationAccounts = Object.values(derived[chain.id]).filter(
       (account) => account.details.isShielded == isShielded
-    );
-    console.log("YOOO destinationAccounts", destinationAccounts)
+    )
+    .map(account => ({
+      ...account,
+      details: {
+        ...account.details,
+        alias: account.details.alias + (isShielded ? " (shielded) - "  : " - ") + account.details.address.slice(0,6) + "..." + account.details.address.slice(-6)
+      }
+    }));
     setDestinationAccounts(destinationAccounts);
     const destinationAccountsData = destinationAccounts.map(
       ({ details: { alias, address } }) => ({
@@ -310,27 +312,13 @@ const IBCTransfer = (): JSX.Element => {
     setError(undefined)
     const tokens = sourceChain.id === "namada" ? Tokens : CosmosTokens;
     if (sourceAccount && token) {
-      // const channelId_= "channel-3987"
-    console.log("handleSubmit:")
-    console.log("account: ", sourceAccount.details)
-    console.log("token: ", tokens[token as TokenType & CosmosTokenType])
-    console.log("amount: ", amount)
-    console.log("chainId: ", sourceChainId)
-    console.log("target: ", recipient)
-    console.log("channelId: ", selectedChannelId)
-    console.log("portId: ", portId)
-    console.log("nativeToken: ", chain.currency.address || tokenAddress)
-    console.log("memo: ", memo)
-    console.log("isShielded: ", isShielded)
       submitIbcTransfer(sourceChain.id, {
         account: sourceAccount.details,
         token: tokens[token as TokenType & CosmosTokenType],
         amount,
         chainId: sourceChainId,
         target: recipient,
-        // target: "znam1qprxaehspfsx2ceyr4fyewcejhvrsgeur8tx8nkhy49q4eacq29flvjmgwu5axu74dmgzeqdw76cg",
-        channelId: "channel-4038",
-        // channelId: selectedChannelId,
+        channelId: selectedChannelId,
         portId,
         nativeToken: chain.currency.address || tokenAddress,
         memo,
@@ -418,6 +406,7 @@ const IBCTransfer = (): JSX.Element => {
 
   useEffect(() => {
     const isValid = validateForm();
+    // TOOD: replace with check
     // setIsFormValid(isValid);
     setIsFormValid(true);
   }, [
@@ -486,7 +475,7 @@ const IBCTransfer = (): JSX.Element => {
                 onChange={handleTokenChange}
               />
             </InputContainer>
-            : sourceAccounts.length > 0
+            : sourceChain.id == 'cosmos' ? cosmosAccountBalance.length >0 ? `${cosmosAccountBalance[0].amount} ${cosmosAccountBalance[0].token}` : <Alert type="warning">You have no token balances</Alert> : sourceAccounts.length > 0
               ? <Alert type="warning">You have no token balances</Alert>
               : null
           }
@@ -598,8 +587,6 @@ const IBCTransfer = (): JSX.Element => {
           </InputContainer>
 
           <InputContainer>
-          {/* {JSON.stringify(amount)}
-          {JSON.stringify(currentBalance)} */}
             <Input
               type="number"
               label={"Amount"}
@@ -610,6 +597,7 @@ const IBCTransfer = (): JSX.Element => {
               }}
               onFocus={handleFocus}
               error={
+                // TODO: replace with check 
                 // isAmountValid(amount, currentBalance) || amount.isZero()
                 true
                   ? undefined

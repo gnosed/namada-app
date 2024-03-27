@@ -61,6 +61,10 @@ const assetIconByToken: Record<TokenType, { light: string; dark: string }> = {
     light: AssetNamadaNamLight,
     dark: AssetNamadaNamDark,
   },
+  ["ATOM"]: {
+    light: AssetNamadaNamLight,
+    dark: AssetNamadaNamDark,
+  },
 };
 
 const DerivedAccounts = (): JSX.Element => {
