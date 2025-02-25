@@ -34,6 +34,40 @@
 * Move optional value to end of schema, no empty memo ([#1379](https://github.com/anoma/namada-interface/issues/1379)) ([ee49600](https://github.com/anoma/namada-interface/commit/ee496001aad9291e3bb224f91ac5caf31a1143db))
 * Replace tally type with two fifths ([#1252](https://github.com/anoma/namada-interface/issues/1252)) ([785d9ad](https://github.com/anoma/namada-interface/commit/785d9ad5d6cf7d7abab53ae9cf812fbbfa84b0f7))
 
+## [0.5.0](https://github.com/gnosed/namada-app/compare/types-v0.4.0...types@v0.5.0) (2025-02-25)
+
+
+### Features
+
+* Add balance to masp overview ([#1169](https://github.com/gnosed/namada-app/issues/1169)) ([38754bf](https://github.com/gnosed/namada-app/commit/38754bf0e621a955837cb89d07a583b60f9614bf))
+* Add build:docs to types package, include generated docs ([#918](https://github.com/gnosed/namada-app/issues/918)) ([a3754f4](https://github.com/gnosed/namada-app/commit/a3754f477e7f9230d186d5e6259d9112ddd1c45a))
+* Add info to broadcast tx response ([#919](https://github.com/gnosed/namada-app/issues/919)) ([dc48614](https://github.com/gnosed/namada-app/commit/dc48614a9aad5e97fccacead538d68130baf25d0))
+* Add namadillo disconnect button ([#1092](https://github.com/gnosed/namada-app/issues/1092)) ([089b59b](https://github.com/gnosed/namada-app/commit/089b59b219a63283efbb11b5d43e0283f32a8160))
+* Add the switch account button ([#1051](https://github.com/gnosed/namada-app/issues/1051)) ([bfc42c3](https://github.com/gnosed/namada-app/commit/bfc42c3ff323a6dee24a91e56f5d2269f96ea8fa))
+* Begin integration of IBC with transfer module ([#1162](https://github.com/gnosed/namada-app/issues/1162)) ([08c7e2d](https://github.com/gnosed/namada-app/commit/08c7e2d9186809629abe64741d1a7970b5855958))
+* Bump keychain version, update type docs ([#1363](https://github.com/gnosed/namada-app/issues/1363)) ([eece967](https://github.com/gnosed/namada-app/commit/eece96730099ba0d4f5f506c5b4cd2520c82e198))
+* Bump shared to namada 0.41.0 ([#948](https://github.com/gnosed/namada-app/issues/948)) ([958b697](https://github.com/gnosed/namada-app/commit/958b69705046e9a5d6d76f07e896721f2217747b))
+* Bump to 0.39.0, specify transparent transfer in types ([#858](https://github.com/gnosed/namada-app/issues/858)) ([3ad6200](https://github.com/gnosed/namada-app/commit/3ad620045a6c2c51dda7be0ccc1a2e88b54a959e))
+* Enable IBC withdrawals for all tokens ([#1243](https://github.com/gnosed/namada-app/issues/1243)) ([14106eb](https://github.com/gnosed/namada-app/commit/14106eba676c38cc3fee379221359557c5758da2))
+* Force bond in the claim and stake flow ([#1370](https://github.com/gnosed/namada-app/issues/1370)) ([a640415](https://github.com/gnosed/namada-app/commit/a640415a25e7b5b74cf6c37644f81b94b3c56911))
+* Indexer integration part 1 ([#778](https://github.com/gnosed/namada-app/issues/778)) ([0d82ba7](https://github.com/gnosed/namada-app/commit/0d82ba7ea53cd47870f0e3cca01aaa09780323c8))
+* Post-release bumps, changelogs ([#1364](https://github.com/gnosed/namada-app/issues/1364)) ([a2f3f5c](https://github.com/gnosed/namada-app/commit/a2f3f5cd54ff4bf905b385dc58a9c5d44c2c4ba4))
+* Shield nam ([#1165](https://github.com/gnosed/namada-app/issues/1165)) ([e6b5530](https://github.com/gnosed/namada-app/commit/e6b55307c77312a3bdde192ec721d5e84883d4ba))
+* Show proposal activation time ([#947](https://github.com/gnosed/namada-app/issues/947)) ([513e1ba](https://github.com/gnosed/namada-app/commit/513e1ba3ebf59dcd07331e3718f6134a22ae0129))
+* Support claim rewards tx in SDK ([#932](https://github.com/gnosed/namada-app/issues/932)) ([59d0ea9](https://github.com/gnosed/namada-app/commit/59d0ea9659658c23c804324d46594783ed695a2e))
+* Unshield + shielded transfers + disposable gas payer ([#1191](https://github.com/gnosed/namada-app/issues/1191)) ([e8f0b39](https://github.com/gnosed/namada-app/commit/e8f0b39452f0b7fac583ee7cb5812409378cfcd0))
+* Update docs in SDK & types ([#1472](https://github.com/gnosed/namada-app/issues/1472)) ([dbcef4f](https://github.com/gnosed/namada-app/commit/dbcef4fa19f0373ae7a328e5c30e1e4dab2b599d))
+* Update Keychain for new modified-zip32 ([#1624](https://github.com/gnosed/namada-app/issues/1624)) ([b19caae](https://github.com/gnosed/namada-app/commit/b19caae391b0411f51ee9b48325eeb62d421e7d3))
+* Vks birthdays ([#1415](https://github.com/gnosed/namada-app/issues/1415)) ([294031d](https://github.com/gnosed/namada-app/commit/294031d8c7bf53c56fc81404b46d6c63ce13b651))
+
+
+### Bug Fixes
+
+* Decode continuous pgf proposal to ibc target ([#1397](https://github.com/gnosed/namada-app/issues/1397)) ([1faf1f6](https://github.com/gnosed/namada-app/commit/1faf1f685b629e336f6a0aec1d88e6b06029a39e))
+* Move optional value to end of schema, no empty memo ([#1379](https://github.com/gnosed/namada-app/issues/1379)) ([ee49600](https://github.com/gnosed/namada-app/commit/ee496001aad9291e3bb224f91ac5caf31a1143db))
+* Proposals checksums and data download ([#1721](https://github.com/gnosed/namada-app/issues/1721)) ([e942a75](https://github.com/gnosed/namada-app/commit/e942a7578e4d8b17898e7c68599883eaa943bde8))
+* Replace tally type with two fifths ([#1252](https://github.com/gnosed/namada-app/issues/1252)) ([785d9ad](https://github.com/gnosed/namada-app/commit/785d9ad5d6cf7d7abab53ae9cf812fbbfa84b0f7))
+
 ## 0.3.0 (2024-12-02)
 
 
