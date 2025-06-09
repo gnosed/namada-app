@@ -8,6 +8,43 @@
 
 - enable panic hook in Rust SDK ([6393b82](https://github.com/anoma/namada-interface/commit/6393b8263320e0f6d137f4e015b982f17f7e497e))
 
+## [0.20.0](https://github.com/gnosed/namada-app/compare/sdk@v0.19.0...sdk@v0.20.0) (2025-06-09)
+
+
+### Features
+
+* Add rewards column ([#1793](https://github.com/gnosed/namada-app/issues/1793)) ([75c65cf](https://github.com/gnosed/namada-app/commit/75c65cfdb20abbe48b827f8005bd716ef2027c21))
+* Add support for IBC deposits to shielded ([#1163](https://github.com/gnosed/namada-app/issues/1163)) ([50d8e61](https://github.com/gnosed/namada-app/commit/50d8e61374c39c9a89afab183ee87f87d4c0a561))
+* Adding masp asset rewards panel info ([#1797](https://github.com/gnosed/namada-app/issues/1797)) ([3b1a197](https://github.com/gnosed/namada-app/commit/3b1a197aac9153d5f549a9f2c68b92a4b022e3df))
+* Bump SDK and update changelog ([#1473](https://github.com/gnosed/namada-app/issues/1473)) ([b12228f](https://github.com/gnosed/namada-app/commit/b12228f4910985d6604ac6f5b08f35f6f092fed7))
+* Bump SDK for Namada libs v0.150.1 ([#2085](https://github.com/gnosed/namada-app/issues/2085)) ([e1a0b69](https://github.com/gnosed/namada-app/commit/e1a0b6959a476d51edc382c5fba9f247f59be9ea))
+* Bump to 0.13.0 ([#1380](https://github.com/gnosed/namada-app/issues/1380)) ([2d78352](https://github.com/gnosed/namada-app/commit/2d78352d0f5608f7909c79b4a523e8851faa9739))
+* Enable IBC withdrawals for all tokens ([#1243](https://github.com/gnosed/namada-app/issues/1243)) ([14106eb](https://github.com/gnosed/namada-app/commit/14106eba676c38cc3fee379221359557c5758da2))
+* Extension - Add view and import Spending Key ([#1744](https://github.com/gnosed/namada-app/issues/1744)) ([8306f47](https://github.com/gnosed/namada-app/commit/8306f47aefc51bb4da1f5466637f3697ef87dcbf))
+* Ibc unshielding ([#1920](https://github.com/gnosed/namada-app/issues/1920)) ([2996391](https://github.com/gnosed/namada-app/commit/29963912650c4401cb09163042fb889986e094f6))
+* Keychain/Namadillo: Payment Address gen ([#1905](https://github.com/gnosed/namada-app/issues/1905)) ([200bd4b](https://github.com/gnosed/namada-app/commit/200bd4b400e36b5b216dc5a2facbe92c56c56b0b))
+* Move sdk package into [@namada](https://github.com/namada) org ([#1230](https://github.com/gnosed/namada-app/issues/1230)) ([0376020](https://github.com/gnosed/namada-app/commit/0376020411a6b123376a39bce4240bb7468858ae))
+* Post-release bumps, changelogs ([#1364](https://github.com/gnosed/namada-app/issues/1364)) ([a2f3f5c](https://github.com/gnosed/namada-app/commit/a2f3f5cd54ff4bf905b385dc58a9c5d44c2c4ba4))
+* SDK - Add lookup for TxResponse result codes ([#1946](https://github.com/gnosed/namada-app/issues/1946)) ([54e2562](https://github.com/gnosed/namada-app/commit/54e2562627c3ffbedcd551d42440872d7a8ead18))
+* Sdk version bump, changelog ([#1175](https://github.com/gnosed/namada-app/issues/1175)) ([f70a6a4](https://github.com/gnosed/namada-app/commit/f70a6a4c1e1d8ddef3e2985ec16295c666f4c95b))
+* Shield nam ([#1165](https://github.com/gnosed/namada-app/issues/1165)) ([e6b5530](https://github.com/gnosed/namada-app/commit/e6b55307c77312a3bdde192ec721d5e84883d4ba))
+* Shielded rewards intergration ([#1378](https://github.com/gnosed/namada-app/issues/1378)) ([622044d](https://github.com/gnosed/namada-app/commit/622044de6a20cb673803eadf1330ccb18b9ae903))
+* Shielded sync improvements ([#1441](https://github.com/gnosed/namada-app/issues/1441)) ([7a5430a](https://github.com/gnosed/namada-app/commit/7a5430acf4a129fcaef0025aedd117015437d425))
+* Support decoding ibc tx details in sdk ([#1174](https://github.com/gnosed/namada-app/issues/1174)) ([1bd083b](https://github.com/gnosed/namada-app/commit/1bd083ba5883a3f722a6838b9694223afeae71a1))
+* Unshield + shielded transfers + disposable gas payer ([#1191](https://github.com/gnosed/namada-app/issues/1191)) ([e8f0b39](https://github.com/gnosed/namada-app/commit/e8f0b39452f0b7fac583ee7cb5812409378cfcd0))
+* Update docs in SDK & types ([#1472](https://github.com/gnosed/namada-app/issues/1472)) ([dbcef4f](https://github.com/gnosed/namada-app/commit/dbcef4fa19f0373ae7a328e5c30e1e4dab2b599d))
+* Update Keychain for new modified-zip32 ([#1624](https://github.com/gnosed/namada-app/issues/1624)) ([b19caae](https://github.com/gnosed/namada-app/commit/b19caae391b0411f51ee9b48325eeb62d421e7d3))
+* Vks birthdays ([#1415](https://github.com/gnosed/namada-app/issues/1415)) ([294031d](https://github.com/gnosed/namada-app/commit/294031d8c7bf53c56fc81404b46d6c63ce13b651))
+
+
+### Bug Fixes
+
+* Add missing Ledger dependency ([#2050](https://github.com/gnosed/namada-app/issues/2050)) ([7495e35](https://github.com/gnosed/namada-app/commit/7495e3597c21e5116a9ef77f2e184f53cabb47ee))
+* Bump SDK docks, trigger release ([#2008](https://github.com/gnosed/namada-app/issues/2008)) ([a52194e](https://github.com/gnosed/namada-app/commit/a52194e897cb77c224f47ff8021d9e914a473c99))
+* Move optional value to end of schema, no empty memo ([#1379](https://github.com/gnosed/namada-app/issues/1379)) ([ee49600](https://github.com/gnosed/namada-app/commit/ee496001aad9291e3bb224f91ac5caf31a1143db))
+* SDK and extension should use the same ledger-namada package ([#1376](https://github.com/gnosed/namada-app/issues/1376)) ([7fa916b](https://github.com/gnosed/namada-app/commit/7fa916b049b2dacc9b9dca7ee062319f8c2bee5a))
+* Updating imports for consistency ([#1325](https://github.com/gnosed/namada-app/issues/1325)) ([ae2b4eb](https://github.com/gnosed/namada-app/commit/ae2b4eb0d5aa8f464cd8752404742359702210d4))
+
 ## [0.19.0](https://github.com/anoma/namada-interface/compare/sdk@v0.18.2...sdk@v0.19.0) (2025-06-06)
 
 
